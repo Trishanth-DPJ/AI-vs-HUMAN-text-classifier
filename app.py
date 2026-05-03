@@ -3,7 +3,6 @@ import streamlit as st
 import joblib
 import warnings
 import nltk
-import numpy as np
 from scipy.sparse import hstack
 
 warnings.filterwarnings("ignore")
@@ -57,6 +56,13 @@ def load_objects():
         st.error(f"Error loading models: {e}")
         return None, None, None
 
+def explain_prediction(text, prediction):
+    """Provides a simple, user-friendly explanation based on the prediction."""
+    if prediction == 1:
+        return "The text exhibits highly structured writing, formal tone, and structural consistency typical of AI generation."
+    else:
+        return "The text shows natural irregularities, casual phrasing, slang, or emotional tone typically found in human writing."
+
 def main():
     st.set_page_config(page_title="AI vs Human Text Detector", page_icon="🤖", layout="centered")
     
@@ -97,29 +103,6 @@ def main():
                 label = "AI-generated" if prediction == 1 else "Human-written"
                 confidence = probabilities[prediction] * 100
 
-                # --- EXPLAINABILITY LOGIC ---
-                # Retrieve feature names
-                tfidf_names = vectorizer.get_feature_names_out()
-                hc_names = ['Sentence Length Variance', 'Punctuation Frequency', 'Capitalization Ratio', 'Word Repetition Ratio']
-                feature_names = np.concatenate([tfidf_names, hc_names])
-                
-                # Calculate exact feature contributions (Score = Weight * Input Value)
-                instance_features = combined_features.toarray()[0]
-                contributions = model.coef_[0] * instance_features
-                
-                # Sort indices of contributions
-                sorted_indices = np.argsort(contributions)
-                
-                # Top positive contributions push toward Class 1 (AI)
-                top_ai_idx = sorted_indices[-5:][::-1] 
-                
-                # Top negative contributions push toward Class 0 (Human)
-                top_human_idx = sorted_indices[:5]
-                
-                # Filter out ones with zero contribution
-                ai_reasons = [(feature_names[i], contributions[i]) for i in top_ai_idx if contributions[i] > 0]
-                human_reasons = [(feature_names[i], contributions[i]) for i in top_human_idx if contributions[i] < 0]
-
             # UI Update
             st.markdown("---")
             if label == "AI-generated":
@@ -133,29 +116,9 @@ def main():
             st.progress(float(probabilities[1]), text=f"AI Probability: {ai_prob:.1f}%")
             st.progress(float(probabilities[0]), text=f"Human Probability: {human_prob:.1f}%")
             
-            # --- EXPLAINER UI ---
+            # Simple, human-readable Explanations
             st.markdown("---")
-            with st.expander("🔍 Why did the model choose this?"):
-                st.write("The model identified the following key patterns and words that heavily influenced its decision:")
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown("**Triggers for 'AI-generated':**")
-                    if not ai_reasons:
-                        st.caption("*(None)*")
-                    else:
-                        for feat, score in ai_reasons:
-                            st.write(f"- **{feat}**")
-                            # st.caption(f"Impact: {score:.2f}")
-                            
-                with col2:
-                    st.markdown("**Triggers for 'Human-written':**")
-                    if not human_reasons:
-                        st.caption("*(None)*")
-                    else:
-                        for feat, score in human_reasons:
-                            st.write(f"- **{feat}**")
-                            # st.caption(f"Impact: {score:.2f}")
+            st.info(f"**Why this result:** {explain_prediction(user_text, prediction)}")
 
 if __name__ == "__main__":
     main()
