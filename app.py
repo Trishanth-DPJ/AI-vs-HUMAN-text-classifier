@@ -15,7 +15,8 @@ def setup_nltk():
 
 setup_nltk()
 
-from nlp_utils import clean_text, extract_features
+from nlp_utils import clean_text
+from features import extract_features
 
 # Use absolute paths for stability in Streamlit Cloud
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -88,9 +89,15 @@ def main():
             with st.spinner("Analyzing..."):
                 # Preprocess and Extract Features
                 cleaned = clean_text(user_text)
-                hc_features = extract_features([user_text])
-                print(f"Debug: Feature length during prediction = {hc_features.shape[1]}")
+                hc_features = [extract_features(user_text)]
                 
+                print(f"Debug: len(hc_features[0]) = {len(hc_features[0])}")
+                print(f"Debug: scaler.n_features_in_ = {scaler.n_features_in_}")
+                
+                if len(hc_features[0]) != scaler.n_features_in_:
+                    st.error(f"Feature mismatch! Extracted {len(hc_features[0])} features, but model expects {scaler.n_features_in_}.")
+                    return
+
                 hc_scaled = scaler.transform(hc_features)
                 tfidf_features = vectorizer.transform([cleaned])
                 combined_features = hstack([tfidf_features, hc_scaled])
