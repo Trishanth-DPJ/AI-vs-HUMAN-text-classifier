@@ -93,6 +93,7 @@ def main():
                 
                 print(f"Debug: len(hc_features[0]) = {len(hc_features[0])}")
                 print(f"Debug: scaler.n_features_in_ = {scaler.n_features_in_}")
+                st.write(f"**Debug info:** Scaler expects: {scaler.n_features_in_} features.")
                 
                 if len(hc_features[0]) != scaler.n_features_in_:
                     st.error(f"Feature mismatch! Extracted {len(hc_features[0])} features, but model expects {scaler.n_features_in_}.")
