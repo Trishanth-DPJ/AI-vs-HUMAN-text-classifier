@@ -20,9 +20,9 @@ from features import extract_features
 
 # Use absolute paths for stability in Streamlit Cloud
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
-VECTORIZER_PATH = os.path.join(BASE_DIR, "vectorizer.pkl")
-SCALER_PATH = os.path.join(BASE_DIR, "scaler.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "model_v2.pkl")
+VECTORIZER_PATH = os.path.join(BASE_DIR, "vectorizer_v2.pkl")
+SCALER_PATH = os.path.join(BASE_DIR, "scaler_v2.pkl")
 DATASET_PATH = os.path.join(BASE_DIR, "dataset.csv")
 
 def ensure_dependencies():

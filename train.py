@@ -5,6 +5,8 @@ from scipy.sparse import hstack
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
@@ -79,31 +81,49 @@ def main():
     lr_model = LogisticRegression(random_state=42, max_iter=1000)
     lr_model.fit(X_train_combined, y_train)
     
+    svm_model = SVC(probability=True, random_state=42)
+    svm_model.fit(X_train_combined, y_train)
+    
+    rf_model = RandomForestClassifier(n_estimators=100, max_depth=10, random_state=42)
+    rf_model.fit(X_train_combined, y_train)
+    
     nb_model = MultinomialNB()
     nb_model.fit(X_train_combined, y_train)
     
     print("\n--- 5. Evaluation & Error Analysis ---")
     lr_preds = lr_model.predict(X_test_combined)
+    svm_preds = svm_model.predict(X_test_combined)
+    rf_preds = rf_model.predict(X_test_combined)
     nb_preds = nb_model.predict(X_test_combined)
     
     lr_acc = print_metrics("Logistic Regression", y_test, lr_preds)
+    svm_acc = print_metrics("Support Vector Machine (SVM)", y_test, svm_preds)
+    rf_acc = print_metrics("Random Forest", y_test, rf_preds)
     nb_acc = print_metrics("Naive Bayes", y_test, nb_preds)
-    
-    print_wrong_predictions(y_test, lr_preds, texts_test, limit=5)
     
     print("\nModel Performance:")
     print(f"Logistic Regression -> Accuracy: {lr_acc*100:.2f}%")
+    print(f"Support Vector Machine -> Accuracy: {svm_acc*100:.2f}%")
+    print(f"Random Forest -> Accuracy: {rf_acc*100:.2f}%")
     print(f"Naive Bayes -> Accuracy: {nb_acc*100:.2f}%")
     
-    print("\nOutput Summary:")
-    print("The model performs well on casual vs formal text but struggles with mixed tone inputs,")
-    print("especially where AI successfully simulates slang, or where human text uses overly rigid grammar.")
+    # Select Best Model dynamically
+    models = {
+        "Logistic Regression": (lr_model, lr_acc),
+        "Support Vector Machine": (svm_model, svm_acc),
+        "Random Forest": (rf_model, rf_acc) # Ensure nb isn't in main consideration given user task
+    }
     
-    print("\n--- 6. Saving Models ---")
-    joblib.dump(lr_model, "model.pkl")
-    joblib.dump(vectorizer, "vectorizer.pkl")
-    joblib.dump(scaler, "scaler.pkl")
-    print("Saved Logistic Regression to model.pkl")
+    best_name = max(models, key=lambda k: models[k][1])
+    best_model = models[best_name][0]
+    best_acc = models[best_name][1]
+    
+    print(f"\n--- 6. Saving Models ---")
+    print(f"Selected {best_name} as the best model with {best_acc*100:.2f}% Accuracy!")
+    joblib.dump(best_model, "model_v2.pkl")
+    joblib.dump(vectorizer, "vectorizer_v2.pkl")
+    joblib.dump(scaler, "scaler_v2.pkl")
+    print(f"Saved {best_name} to model_v2.pkl")
 
 if __name__ == "__main__":
     main()
