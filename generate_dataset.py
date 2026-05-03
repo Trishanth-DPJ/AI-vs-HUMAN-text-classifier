@@ -29,8 +29,10 @@ HUMAN_FORMAL = [
     "The analysis of {subject} indicates a {adj} trend.",
     "Researchers have often described {subject} as {adj} in nature.",
     "In this paper, we argue that {subject} is essentially {adj}.",
-    "honestly, {subject} was {adj}. would not recommend.",
-    "5 stars! {subject} is {adj} and I loved every second of it."
+    "Statistical evidence suggests that {subject} remains {adj}.",
+    "The hypothesis that {subject} is {adj} was tested extensively.",
+    "A thorough examination reveals that {subject} is {adj}.",
+    "It is hypothesized that {subject} could be {adj}."
 ]
 
 # Emotional 
@@ -57,7 +59,11 @@ HUMAN_MIXED_TAMIL = [
     "enna bro it is {adj} about {subject}?",
     "{subject} romba {adj} irukku pa",
     "i think {subject} is {adj} nu nenaikiren",
-    "sathiyama {subject} is {adj} thambi!!"
+    "sathiyama {subject} is {adj} thambi!!",
+    "kandippa {subject} is very {adj}.",
+    "antha {subject} vanthu romba {adj} kedaikuthu.",
+    "bro {subject} epadi intha alavuku {adj} aachu?",
+    "intha {subject} paathaale {adj} feel aaguthu."
 ]
 
 # ==================== AI TEMPLATES ====================
@@ -72,7 +78,9 @@ AI_FORMAL = [
 AI_INFORMAL = [
     "Hey there! So, {subject} is pretty {adj}, don't you think?",
     "Just wanted to chime in and say {subject} is super {adj}!",
-    "Wow, I just processed some data and {subject} is totally {adj}."
+    "Wow, I just processed some data and {subject} is totally {adj}.",
+    "Honestly, looking at the facts, {subject} is quite {adj}. Cool stuff!",
+    "Got it! Here is a casual reminder that {subject} is {adj}."
 ]
 
 # Slang (AI simulating modern slang)
@@ -81,7 +89,9 @@ AI_SLANG = [
     "ngl, {subject} is straight up {adj} tbh.",
     "lowkey {subject} is kinda {adj} no cap.",
     "bruh {subject} is deadass {adj}.",
-    "{subject} is {adj} af, fr fr."
+    "{subject} is {adj} af, fr fr.",
+    "vibin with {subject} rn, it's so {adj}.",
+    "{subject} is giving {adj} energy."
 ]
 
 # Imperfect Grammar (AI simulating bad grammar)
