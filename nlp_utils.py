@@ -43,12 +43,17 @@ def clean_text(text: str) -> str:
 def get_handcrafted_features(texts: list) -> np.ndarray:
     """
     Extracts additional handcrafted features for a list of texts:
-    1. Sentence length variance: Variation in words per sentence.
-    2. Punctuation frequency: Count occurrences of '!' and '?'.
-    3. Capitalization ratio: Ratio of uppercase letters to total characters.
-    4. Word repetition ratio: Unique words / total words.
+    1. Sentence length variance
+    2. Punctuation frequency
+    3. Capitalization ratio
+    4. Word repetition ratio
+    5. Grammar inconsistency
+    6. Numeric ratio
+    7. Slang ratio
     """
     features = []
+    
+    slang_words = {'bro', 'fam', 'tbh', 'ngl', 'rn', 'lol', 'lmao', 'lowkey', 'cap', 'deadass', 'af', 'fr', 'yo', 'machan', 'da', 'pa', 'thambi', 'enna', 'nu', 'vibes'}
     
     for text in texts:
         # 1. Sentence length variance
@@ -77,10 +82,27 @@ def get_handcrafted_features(texts: list) -> np.ndarray:
         word_count = len(words)
         if word_count == 0:
             rep_ratio = 0.0
+            slang_ratio = 0.0
         else:
             unique_words = len(set(words))
             rep_ratio = unique_words / word_count
+            slang_ratio = sum(1 for w in words if w in slang_words) / word_count
             
-        features.append([sent_len_var, punct_freq, cap_ratio, rep_ratio])
+        # 5. Grammar inconsistency score
+        inconsistency = 0
+        if "!!" in text or "??" in text or "..." in text:
+            inconsistency += 1
+        if re.search(r'\b i \b', text): # lonely lowercase i
+            inconsistency += 1
+        if len(text) > 0 and text[-1] not in ".!?":
+            inconsistency += 1
+            
+        # 6. Numeric ratio
+        if char_count == 0:
+            numeric_ratio = 0.0
+        else:
+            numeric_ratio = sum(1 for c in text if c.isdigit()) / char_count
+            
+        features.append([sent_len_var, punct_freq, cap_ratio, rep_ratio, inconsistency, numeric_ratio, slang_ratio])
         
     return np.array(features)

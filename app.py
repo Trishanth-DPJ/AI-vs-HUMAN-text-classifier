@@ -97,6 +97,24 @@ def main():
                 prediction = model.predict(combined_features)[0]
                 probabilities = model.predict_proba(combined_features)[0]
                 
+                # --- POST-PREDICTION HEURISTICS ---
+                # Retrieve raw feature array [sent_var, punct, cap, rep, inconsist, num, slang]
+                feat_array = hc_features[0]
+                sent_var = feat_array[0]
+                inconsistency = feat_array[4]
+                slang_ratio = feat_array[6]
+                
+                if prediction == 1 and (inconsistency >= 1 or slang_ratio > 0):
+                    # AI predicted, but high grammar inconsistency and slang -> Adjust to Human
+                    prediction = 0
+                    probabilities[0] = min(0.85, probabilities[0] + 0.4)
+                    probabilities[1] = 1.0 - probabilities[0]
+                elif prediction == 0 and slang_ratio == 0 and inconsistency == 0 and sent_var < 2.0:
+                    # Human predicted, but incredibly structured and zero slang -> Adjust to AI
+                    prediction = 1
+                    probabilities[1] = min(0.85, probabilities[1] + 0.4)
+                    probabilities[0] = 1.0 - probabilities[1]
+                
                 human_prob = probabilities[0] * 100
                 ai_prob = probabilities[1] * 100
                 
