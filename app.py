@@ -15,7 +15,7 @@ def setup_nltk():
 
 setup_nltk()
 
-from nlp_utils import clean_text, get_handcrafted_features
+from nlp_utils import clean_text, extract_features
 
 # Use absolute paths for stability in Streamlit Cloud
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -88,7 +88,9 @@ def main():
             with st.spinner("Analyzing..."):
                 # Preprocess and Extract Features
                 cleaned = clean_text(user_text)
-                hc_features = get_handcrafted_features([user_text])
+                hc_features = extract_features([user_text])
+                print(f"Debug: Feature length during prediction = {hc_features.shape[1]}")
+                
                 hc_scaled = scaler.transform(hc_features)
                 tfidf_features = vectorizer.transform([cleaned])
                 combined_features = hstack([tfidf_features, hc_scaled])

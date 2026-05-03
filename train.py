@@ -9,7 +9,7 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix
 
-from nlp_utils import clean_text, get_handcrafted_features
+from nlp_utils import clean_text, extract_features
 
 def print_metrics(model_name, y_true, y_pred):
     acc = accuracy_score(y_true, y_pred)
@@ -51,8 +51,9 @@ def main():
     print("\n--- 2. Preprocessing & Feature Extraction ---")
     df['clean_text'] = df['text'].apply(clean_text)
     
-    print("Extracting handcrafted features (Sentence length var, Punct freq, Cap ratio, Rep ratio)...")
-    X_handcrafted = get_handcrafted_features(df['text'].tolist())
+    print("Extracting handcrafted features...")
+    X_handcrafted = extract_features(df['text'].tolist())
+    print(f"Debug: Feature length during training = {X_handcrafted.shape[1]}")
     
     scaler = MinMaxScaler()
     X_handcrafted_scaled = scaler.fit_transform(X_handcrafted)

@@ -40,7 +40,7 @@ def clean_text(text: str) -> str:
     
     return clean_str
 
-def get_handcrafted_features(texts: list) -> np.ndarray:
+def extract_features(texts: list) -> np.ndarray:
     """
     Extracts additional handcrafted features for a list of texts:
     1. Sentence length variance
